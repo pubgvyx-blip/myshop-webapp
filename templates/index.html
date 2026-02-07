@@ -1,44 +1,34 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Каталог</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
         body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
             background: #0f172a;
             color: white;
-        }
-
-        h1 {
-            margin-bottom: 30px;
+            font-family: Arial;
+            padding: 20px;
         }
 
         .card {
             background: #1e293b;
             padding: 20px;
-            border-radius: 12px;
+            border-radius: 15px;
             margin-bottom: 20px;
         }
 
-        .btn {
+        button {
             background: #3b82f6;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
             color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 10px;
         }
 
-        .btn:hover {
+        button:hover {
             opacity: 0.9;
         }
     </style>
@@ -50,28 +40,21 @@
 <div class="card">
     <h2>Android версия</h2>
     <p>Цена: 100 ⭐</p>
-    <button class="btn" onclick="buy('android', 100)">Купить</button>
+    <button onclick="buy('android')">Купить</button>
 </div>
 
 <div class="card">
     <h2>PC версия</h2>
     <p>Цена: 150 ⭐</p>
-    <button class="btn" onclick="buy('pc', 150)">Купить</button>
+    <button onclick="buy('pc')">Купить</button>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    function buy(product, price) {
-        if (tg) {
-            tg.sendData(JSON.stringify({
-                product: product,
-                price: price
-            }));
-        } else {
-            alert("Telegram WebApp не обнаружен");
-        }
+    function buy(product) {
+        tg.sendData(product);
     }
 </script>
 
