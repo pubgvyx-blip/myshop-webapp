@@ -2,87 +2,78 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Shop</title>
+    <title>Каталог</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
         body {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
             color: white;
         }
 
         h1 {
-            text-align: center;
-            padding: 40px 0;
-            font-size: 36px;
-        }
-
-        .container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            padding-bottom: 60px;
+            margin-bottom: 30px;
         }
 
         .card {
             background: #1e293b;
-            padding: 30px;
-            border-radius: 20px;
-            width: 300px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-            transition: 0.3s;
-            text-align: center;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        .price {
-            font-size: 22px;
-            margin: 15px 0;
-            color: #facc15;
-        }
-
-        button {
-            padding: 12px 25px;
-            border: none;
+            padding: 20px;
             border-radius: 12px;
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
+            margin-bottom: 20px;
         }
 
-        button:hover {
-            opacity: 0.85;
+        .btn {
+            background: #3b82f6;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
-<h1>🚀 Каталог</h1>
+<h1>Каталог</h1>
 
-<div class="container">
-
-    <div class="card">
-        <h2>📱 Android версия</h2>
-        <div class="price">100 ⭐</div>
-        <button>Купить</button>
-    </div>
-
-    <div class="card">
-        <h2>💻 PC версия</h2>
-        <div class="price">150 ⭐</div>
-        <button>Купить</button>
-    </div>
-
+<div class="card">
+    <h2>Android версия</h2>
+    <p>Цена: 100 ⭐</p>
+    <button class="btn" onclick="buy('android', 100)">Купить</button>
 </div>
+
+<div class="card">
+    <h2>PC версия</h2>
+    <p>Цена: 150 ⭐</p>
+    <button class="btn" onclick="buy('pc', 150)">Купить</button>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function buy(product, price) {
+        if (tg) {
+            tg.sendData(JSON.stringify({
+                product: product,
+                price: price
+            }));
+        } else {
+            alert("Telegram WebApp не обнаружен");
+        }
+    }
+</script>
 
 </body>
 </html>
