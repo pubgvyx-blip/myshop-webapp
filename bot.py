@@ -84,3 +84,16 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+from aiogram.types import Message
+from aiogram import F
+
+@dp.message(F.web_app_data)
+async def handle_webapp(message: Message):
+    data = message.web_app_data.data
+
+    if data == "android":
+        await message.answer("Вы выбрали Android версию 🔥")
+
+    elif data == "pc":
+        await message.answer("Вы выбрали PC версию 💻")
