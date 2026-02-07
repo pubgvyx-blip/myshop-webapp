@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background: #0f0f1a;
+            color: white;
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        .card {
+            background: #1a1a2e;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        button {
+            background: #5865f2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Каталог</h2>
+
+{% for key, product in products.items() %}
+<div class="card">
+    <h3>{{ product.title }}</h3>
+    <p>Цена: {{ product.price }} ⭐</p>
+    <button onclick="buy('{{ key }}')">Купить</button>
+</div>
+{% endfor %}
+
+<script>
+function buy(product) {
+    fetch("/buy", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({product: product})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "ok") {
+            alert("Ваш ключ: " + data.key);
+        } else {
+            alert(data.message);
+        }
+    });
+}
+</script>
+
+</body>
+</html>
