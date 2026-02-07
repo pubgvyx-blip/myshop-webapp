@@ -1,63 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Shop</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         body {
-            background: #0f0f1a;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             color: white;
-            font-family: Arial;
-            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 40px 0;
+            font-size: 36px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding-bottom: 60px;
         }
 
         .card {
-            background: #1a1a2e;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 20px;
+            width: 300px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .price {
+            font-size: 22px;
+            margin: 15px 0;
+            color: #facc15;
         }
 
         button {
-            background: #5865f2;
-            color: white;
+            padding: 12px 25px;
             border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            font-size: 16px;
             cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.85;
         }
     </style>
 </head>
 <body>
 
-<h2>Каталог</h2>
+<h1>🚀 Каталог</h1>
 
-{% for key, product in products.items() %}
-<div class="card">
-    <h3>{{ product.title }}</h3>
-    <p>Цена: {{ product.price }} ⭐</p>
-    <button onclick="buy('{{ key }}')">Купить</button>
+<div class="container">
+
+    <div class="card">
+        <h2>📱 Android версия</h2>
+        <div class="price">100 ⭐</div>
+        <button>Купить</button>
+    </div>
+
+    <div class="card">
+        <h2>💻 PC версия</h2>
+        <div class="price">150 ⭐</div>
+        <button>Купить</button>
+    </div>
+
 </div>
-{% endfor %}
-
-<script>
-function buy(product) {
-    fetch("/buy", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({product: product})
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "ok") {
-            alert("Ваш ключ: " + data.key);
-        } else {
-            alert(data.message);
-        }
-    });
-}
-</script>
 
 </body>
 </html>
