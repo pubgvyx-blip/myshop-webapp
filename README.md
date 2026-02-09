@@ -36,3 +36,13 @@ If there are no rows in `keys`, user sees `Нет в наличии`.
 Healthcheck endpoint:
 
 - `GET /health` -> `{"status":"ok"}`
+
+### If Railway has no Run Command/Shell
+
+You can seed stock directly from Telegram admin chat:
+
+- `/add android KEY-001`
+- `/add pc KEY-001`
+- `/stock`
+
+These commands write/read the same `keys` table used by `/buy`.
