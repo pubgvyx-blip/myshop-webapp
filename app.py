@@ -16,8 +16,11 @@ def index():
 
 @app.route("/buy", methods=["POST"])
 def buy():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     product = data.get("product")
+
+    if not product or product not in PRODUCTS:
+        return jsonify({"status": "error", "message": "Некорректный товар"}), 400
 
     conn = sqlite3.connect("../shop.db")
     cursor = conn.cursor()
