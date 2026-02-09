@@ -21,6 +21,11 @@ def index():
     return render_template("index.html", products=PRODUCTS)
 
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
+
+
 @app.route("/buy", methods=["POST"])
 def buy():
     data = request.get_json(silent=True) or {}
