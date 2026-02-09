@@ -31,6 +31,28 @@
         button:hover {
             opacity: 0.9;
         }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 20px;
+            background: #111827;
+            border-radius: 10px;
+            padding: 12px;
+            min-height: 24px;
+            line-height: 1.4;
+        }
+
+        .status.success {
+            border: 1px solid #10b981;
+        }
+
+        .status.error {
+            border: 1px solid #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -40,21 +62,59 @@
 <div class="card">
     <h2>Android версия</h2>
     <p>Цена: 100 ⭐</p>
-    <button onclick="buy('android')">Купить</button>
+    <button onclick="buy('android', this)">Купить</button>
 </div>
 
 <div class="card">
     <h2>PC версия</h2>
     <p>Цена: 150 ⭐</p>
-    <button onclick="buy('pc')">Купить</button>
+    <button onclick="buy('pc', this)">Купить</button>
 </div>
+
+<div id="status" class="status">Нажмите «Купить», чтобы получить ключ.</div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    function buy(product) {
-        tg.sendData(product);
+    const statusEl = document.getElementById("status");
+
+    function setStatus(message, type = "") {
+        statusEl.textContent = message;
+        statusEl.className = `status ${type}`.trim();
+    }
+
+    async function buy(product, buttonEl) {
+        buttonEl.disabled = true;
+        setStatus("Покупка обрабатывается...");
+
+        try {
+            const response = await fetch("/buy", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({product})
+            });
+
+            let payload;
+            try {
+                payload = await response.json();
+            } catch (e) {
+                payload = {status: "error", message: `Ошибка сервера (${response.status})`};
+            }
+
+            if (!response.ok || payload.status !== "ok") {
+                const errorMessage = payload.message || "Ошибка при покупке";
+                setStatus(`❌ ${errorMessage}`, "error");
+                return;
+            }
+
+            setStatus(`✅ Ваш ключ: ${payload.key}`, "success");
+            tg.sendData(JSON.stringify({event: "purchase", product, key: payload.key}));
+        } catch (error) {
+            setStatus("❌ Не удалось связаться с сервером", "error");
+        } finally {
+            buttonEl.disabled = false;
+        }
     }
 </script>
 

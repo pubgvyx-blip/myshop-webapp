@@ -1,13 +1,20 @@
-from flask import Flask, render_template, request, jsonify
+import os
 import sqlite3
+from pathlib import Path
+
+from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
+
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = os.getenv("DB_PATH", str(BASE_DIR / "shop.db"))
 
 # Товары
 PRODUCTS = {
     "android": {"title": "Android версия", "price": 100},
     "pc": {"title": "PC версия", "price": 150},
 }
+
 
 @app.route("/")
 def index():
@@ -16,30 +23,45 @@ def index():
 
 @app.route("/buy", methods=["POST"])
 def buy():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     product = data.get("product")
 
-    conn = sqlite3.connect("../shop.db")
-    cursor = conn.cursor()
+    if not product or product not in PRODUCTS:
+        return jsonify({"status": "error", "message": "Некорректный товар"}), 400
 
-    cursor.execute(
-        "SELECT id, key FROM keys WHERE product = ? AND is_used = 0 LIMIT 1",
-        (product,)
-    )
-    result = cursor.fetchone()
-
-    if result:
-        key_id, key_value = result
+    conn = None
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
         cursor.execute(
-            "UPDATE keys SET is_used = 1 WHERE id = ?",
-            (key_id,)
+            """
+            CREATE TABLE IF NOT EXISTS keys (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                product TEXT NOT NULL,
+                key TEXT NOT NULL,
+                is_used INTEGER NOT NULL DEFAULT 0
+            )
+            """
         )
-        conn.commit()
-        conn.close()
-        return jsonify({"status": "ok", "key": key_value})
 
-    conn.close()
-    return jsonify({"status": "error", "message": "Нет в наличии"})
+        cursor.execute(
+            "SELECT id, key FROM keys WHERE product = ? AND is_used = 0 LIMIT 1",
+            (product,),
+        )
+        result = cursor.fetchone()
+
+        if result:
+            key_id, key_value = result
+            cursor.execute("UPDATE keys SET is_used = 1 WHERE id = ?", (key_id,))
+            conn.commit()
+            return jsonify({"status": "ok", "key": key_value})
+
+        return jsonify({"status": "error", "message": "Нет в наличии"})
+    except sqlite3.Error:
+        return jsonify({"status": "error", "message": "Ошибка базы данных. Проверьте DB_PATH и таблицу keys."}), 500
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 if __name__ == "__main__":
